@@ -24,15 +24,23 @@ static std::wstring get_text_from_node(boost::property_tree::ptree& p, const std
 	replace_all(str, L"\\n", L"\n");
 	return str;
 }
+template<typename T>struct cast_from_size_t_to {
+	T operator()(size_t n) { return static_cast<T>(n); }
+};
+template<>struct cast_from_size_t_to<bool> {
+	bool operator()(size_t n) { 
+		if (n > 1) throw std::overflow_error("bool型にキャストできません");
+		return 0 != n; 
+	}
+};
 template<typename T> static T get_uint_from_node(boost::property_tree::ptree& p, const std::string& path) {
 	static_assert(std::is_unsigned<T>::value && sizeof(T) <= sizeof(size_t), "no supported type.");
 	auto target_node = p.get_optional<size_t>(path);
 	if (!target_node) throw std::runtime_error("xmlのnodeの読み込みに失敗しました");
-	return static_cast<T>(target_node.get());
+	return cast_from_size_t_to<T>()(target_node.get());
 }
 std::vector<question_xml_data_c> read_question_xml(const std::string & xmlfilename){
 	std::vector<question_xml_data_c> re;
-	std::vector<std::wstring> re;
 	boost::property_tree::ptree pt;
 	read_xml(xmlfilename, pt);
 	static_assert(sizeof(wchar_t) == 2, "In function 'read_question' : Please check usage of 'std::codecvt_utf8_utf16'");
