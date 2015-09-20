@@ -154,10 +154,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Environment-dependent.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="prelude.cpp" />
     <ClCompile Include="question_xml_read.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Environment-dependent.h" />
+    <ClInclude Include="make_array.h" />
+    <ClInclude Include="prelude.h" />
     <ClInclude Include="question_xml_read.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
