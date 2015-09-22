@@ -19,6 +19,7 @@ template<typename T> static void replace_all(std::basic_string<T>& str, const T*
 static std::wstring get_text_from_node(boost::property_tree::ptree& p, const std::string& path) {
 	auto target_node = p.get_optional<std::string>(path);
 	if (!target_node) throw std::runtime_error("xmlのnodeの読み込みに失敗しました");
+	static_assert(sizeof(wchar_t) == 2, "In function 'read_question' : Please check usage of 'std::codecvt_utf8_utf16'");
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> convert;
 	auto str = convert.from_bytes(target_node.get());
 	replace_all(str, L"\\n", L"\n");
@@ -33,8 +34,6 @@ std::vector<question_xml_data_c> read_question_xml(const std::string & xmlfilena
 	std::vector<question_xml_data_c> re;
 	boost::property_tree::ptree pt;
 	read_xml(xmlfilename, pt);
-	static_assert(sizeof(wchar_t) == 2, "In function 'read_question' : Please check usage of 'std::codecvt_utf8_utf16'");
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> convert;
 	for (auto& i : pt.get_child(u8"questionbook")) {
 		re.emplace_back(
 			get_text_from_node(i.second, u8"question"),
