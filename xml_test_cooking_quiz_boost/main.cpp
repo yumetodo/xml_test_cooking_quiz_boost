@@ -51,7 +51,7 @@ void show_last_message(const bool isAllcrear, const bool judge_correct, const ui
 bool ask(ans_v& ans, const uint8_t user_level, const int correct_answer, const question_xml_data_c& nodelist) {
 	answer re;
 	//問題文表示, 回答入力
-	re.user_answer = input(nodelist.question.c_str(), nodelist.choices_num, 1U);
+	re.user_answer = input(nodelist.question.c_str(), nodelist.choices_num, static_cast<size_t>(1));
 	re.jude_correct = (correct_answer == re.user_answer);
 	bool judge_continue = re.jude_correct;
 	std::wcout << ((re.jude_correct) ? L"正解" : L"不正解") << L"です。" << std::endl;
