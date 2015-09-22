@@ -48,12 +48,10 @@ void show_last_message(const bool isAllcrear, const bool judge_correct, const ui
 		<< L"新作ゲーム情報等は、readmeのリンクからアクセスできますブログに順次記載していきます。"
 		<< std::endl;
 }
-bool ask(ans_v& ans, const uint8_t user_level, const int correct_answer, const question_xml_data_c& nodelist) {
+bool ask(ans_v& ans, const uint8_t user_level, const int correct_answer, const question_xml_data_c& nodelist) {//問題文表示, 回答入力
 	answer re;
-	//問題文表示, 回答入力
-	re.user_answer = input(nodelist.question.c_str(), nodelist.choices_num, 1U);
-	re.jude_correct = (correct_answer == re.user_answer);
-	bool judge_continue = re.jude_correct;
+	re.user_answer = input(nodelist.question.c_str(), nodelist.choices_num, static_cast<decltype(nodelist.choices_num)>(1));//キャストは保険
+	bool judge_continue = re.jude_correct = (correct_answer == re.user_answer);
 	std::wcout << ((re.jude_correct) ? L"正解" : L"不正解") << L"です。" << std::endl;
 	if (!re.jude_correct && 4 == user_level) {
 		if(L"empty" == nodelist.explanation) std::wcout << L"正解は" << correct_answer << L"です。" << std::endl << nodelist.explanation << std::endl;//解説表示
@@ -85,16 +83,13 @@ int main(void) {
 		clear_console();
 
 		//質問
-		bool judge_correct = true;
 		ans_v ans;
-		for (size_t i = 0; judge_correct == true && i < sequence_of_questions_number.size(); ++i) {
-			const auto question_id = sequence_of_questions_number[i];
-			judge_correct = ask(ans, user_level, correct_answer[question_id], xml[question_id]);
-		}
+		ans.reserve(11);
+		for (const auto qid : sequence_of_questions_number) if (!ask(ans, user_level, correct_answer[qid], xml[qid])) break;
 		const bool isAllcrear = std::all_of(ans.begin(), ans.end(), [](const auto& a) -> bool { return a.jude_correct; });//全問正解か調べる
-		show_last_message(isAllcrear, judge_correct, user_level);
+		show_last_message(isAllcrear, ans.back().jude_correct, user_level);
 	}
-	catch (std::exception& er) {
+	catch (const std::exception& er) {
 		std::cerr << er.what() << std::endl;
 		return -1;
 	}

@@ -4,7 +4,7 @@
 #include <codecvt>
 #include <stdexcept>
 #include <type_traits>
-question_xml_data_c::question_xml_data_c(std::wstring && question, std::wstring && explanation, bool is_not_for_biginner, size_t choices_num)
+question_xml_data_c::question_xml_data_c(std::wstring && question, std::wstring && explanation, bool is_not_for_biginner, int choices_num)
 	: question(std::move(question)), explanation(std::move(explanation)), is_not_for_biginner(is_not_for_biginner), choices_num(choices_num) {}
 
 template<typename T> static void replace_all(std::basic_string<T>& str, const std::basic_string<T>& old_str, const std::basic_string<T>& new_str) {
@@ -24,20 +24,10 @@ static std::wstring get_text_from_node(boost::property_tree::ptree& p, const std
 	replace_all(str, L"\\n", L"\n");
 	return str;
 }
-template<typename T>struct cast_from_size_t_to {
-	T operator()(size_t n) { return static_cast<T>(n); }
-};
-template<>struct cast_from_size_t_to<bool> {
-	bool operator()(size_t n) { 
-		if (n > 1) throw std::overflow_error("bool型にキャストできません");
-		return 0 != n; 
-	}
-};
-template<typename T> static T get_uint_from_node(boost::property_tree::ptree& p, const std::string& path) {
-	static_assert(std::is_unsigned<T>::value && sizeof(T) <= sizeof(size_t), "no supported type.");
-	auto target_node = p.get_optional<size_t>(path);
+static int get_int_from_node(boost::property_tree::ptree& p, const std::string& path) {
+	auto target_node = p.get_optional<int>(path);
 	if (!target_node) throw std::runtime_error("xmlのnodeの読み込みに失敗しました");
-	return cast_from_size_t_to<T>()(target_node.get());
+	return target_node.get();
 }
 std::vector<question_xml_data_c> read_question_xml(const std::string & xmlfilename){
 	std::vector<question_xml_data_c> re;
@@ -49,8 +39,8 @@ std::vector<question_xml_data_c> read_question_xml(const std::string & xmlfilena
 		re.emplace_back(
 			get_text_from_node(i.second, u8"question"),
 			get_text_from_node(i.second, u8"explanation"),
-			get_uint_from_node<bool>(i.second, u8"IsNotForBiginner"),
-			get_uint_from_node<size_t>(i.second, u8"choices_num")
+			0 != get_int_from_node(i.second, u8"IsNotForBiginner"),
+			get_int_from_node(i.second, u8"choices_num")
 		);
 	}
 	return re;
