@@ -107,7 +107,7 @@
   </questiondata>
   <questiondata>
     <questionid>16</questionid>
-    <question>次のうち、カスタードプリンの材料は？\n1.香料\n2.ブドウ糖・液糖・果糖\n3.たんぱく加水分解物\n4.クエン酸</question>
+    <question>次のうち、カスタードプリンの材料は？\n1.香料\n2.ブドウ糖液糖果糖\n3.たんぱく加水分解物\n4.クエン酸</question>
     <explanation>empty</explanation>
     <IsNotForBiginner>0</IsNotForBiginner>
     <choices_num>4</choices_num>

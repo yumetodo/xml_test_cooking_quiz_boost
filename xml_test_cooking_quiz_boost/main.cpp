@@ -1,9 +1,11 @@
 ﻿#include "question_xml_read.h"
-#include <array>
 #include "make_array.h"
 #include "Environment-dependent.h"
 #include "prelude.h"
+#include "cpp_input_num.h"
 #include <iostream>
+#include <array>
+#include <algorithm>
 #include <locale>
 #include <exception>
 struct answer {
@@ -11,55 +13,6 @@ struct answer {
 	bool jude_correct;
 };
 using ans_v = std::vector<answer>;
-#include <iostream>
-#include <exception>
-#include <stdexcept>
-#include <type_traits>
-#include <limits>
-#include <climits>
-template <bool Con, class Then, class Else> struct IF;
-template <class Then, class Else> struct IF<true, Then, Else> { typedef Then type; };
-template <class Then, class Else> struct IF<false, Then, Else> { typedef Else type; };
-template<typename T_> using limit = std::numeric_limits<T_>;//create new type. C++11:alias declaration
-template<typename T_> using int8_conv_buf_t = typename IF<
-	(CHAR_MAX == SCHAR_MAX && std::is_same<T_, char>::value) || std::is_same<T_, signed char>::value,
-	int,
-	typename IF<
-		std::is_same<T_, unsigned char>::value || std::is_same<T_, char>::value,
-		unsigned int,
-		T_
-	>::type
->::type;
-template<typename T_> T_ input(const char* echo_str, const T_ max = limit<T_>::max(), const T_ min = limit<T_>::lowest()) noexcept {
-	static_assert(std::is_arithmetic<T_>::value, "unexpected type T_");//T_が整数か浮動小数点型でないならばコンパイルエラーを出す
-	int8_conv_buf_t<T_> buf;
-	try {
-		if (nullptr == echo_str) throw std::invalid_argument("echo_str is unexpected input");//エラー対策
-		if ('\0' != echo_str[0]) std::cout << echo_str << std::endl;//文字列が空じゃなければ出力
-		std::cin >> buf;//入力を受ける
-		if (max < buf || buf < min) throw std::out_of_range("input is iligal");//範囲チェック
-	}
-	catch (std::exception& er) {
-		std::cerr << er.what() << std::endl;//エラーメッセージ表示
-		return input("再入力してください。", max, min);//エラー時は再帰する方向で
-	}
-	return buf;
-}
-template<typename T_> T_ input(const wchar_t* echo_str, const T_ max = limit<T_>::max(), const T_ min = limit<T_>::lowest()) noexcept {
-	static_assert(std::is_arithmetic<T_>::value, "unexpected type T_");//T_が整数か浮動小数点型でないならばコンパイルエラーを出す
-	int8_conv_buf_t<T_> buf;
-	try {
-		if (nullptr == echo_str) throw std::invalid_argument("echo_str is unexpected input");//エラー対策
-		if ('\0' != echo_str[0]) std::wcout << echo_str << std::endl;//文字列が空じゃなければ出力
-		std::cin >> buf;//入力を受ける
-		if (max < buf || buf < min) throw std::out_of_range("input is iligal");//範囲チェック
-	}
-	catch (std::exception& er) {
-		std::cerr << er.what() << std::endl;//エラーメッセージ表示
-		return input(L"再入力してください。", max, min);//エラー時は再帰する方向で
-	}
-	return buf;
-}
 
 auto decide_sequence_of_questions_number(uint8_t user_level) {
 	static const auto sequence_of_questions_number_table = make_array(
@@ -77,15 +30,15 @@ void show_last_message(const bool isAllcrear, const bool judge_correct, const ui
 			L"入力ミスか遊びだと信じています。",
 			L"夢パティで再確認してもう一度挑戦してくださいね。",
 			L"次は頑張ってくださいね。"
-			),
+		),
 		make_array(
 			L"簡単でしたよね？簡単すぎてすいません。",
 			L"簡単でしたよね？簡単すぎてすいません。",
 			L"あなたは本当に夢パティ愛してますね。",
 			L"クリアおめでとうございます。"
-			)
-		);
-	std::wcout << message[isAllcrear][judge_user_level] << std::endl;
+		)
+	);
+	std::wcout << message[isAllcrear][judge_user_level - 1U] << std::endl;
 	if (judge_correct && 4 == judge_user_level && !isAllcrear) std::wcout << L"次は全問正解を目指しましょう。" << std::endl;
 	pause_console();
 	clear_console();
@@ -95,7 +48,7 @@ void show_last_message(const bool isAllcrear, const bool judge_correct, const ui
 		<< L"新作ゲーム情報等は、readmeのリンクからアクセスできますブログに順次記載していきます。"
 		<< std::endl;
 }
-bool ask(ans_v ans, const uint8_t user_level, const int correct_answer, const question_xml_data_c& nodelist) {
+bool ask(ans_v& ans, const uint8_t user_level, const int correct_answer, const question_xml_data_c& nodelist) {
 	answer re;
 	//問題文表示, 回答入力
 	re.user_answer = input(nodelist.question.c_str(), nodelist.choices_num, 1U);
@@ -103,8 +56,7 @@ bool ask(ans_v ans, const uint8_t user_level, const int correct_answer, const qu
 	bool judge_continue = re.jude_correct;
 	std::wcout << ((re.jude_correct) ? L"正解" : L"不正解") << L"です。" << std::endl;
 	if (!re.jude_correct && 4 == user_level) {
-		std::wcout << "正解は" << correct_answer << "です。" << std::endl
-			<< nodelist.explanation << std::endl;////解説表示
+		if(L"empty" == nodelist.explanation) std::wcout << L"正解は" << correct_answer << L"です。" << std::endl << nodelist.explanation << std::endl;//解説表示
 		if (nodelist.is_not_for_biginner) judge_continue = true;
 	}
 	pause_console();
@@ -134,13 +86,12 @@ int main(void) {
 
 		//質問
 		bool judge_correct = true;
-		ans_v answer;
+		ans_v ans;
 		for (size_t i = 0; judge_correct == true && i < sequence_of_questions_number.size(); ++i) {
 			const auto question_id = sequence_of_questions_number[i];
-			judge_correct = ask(answer, user_level, correct_answer[question_id], xml[question_id]);
+			judge_correct = ask(ans, user_level, correct_answer[question_id], xml[question_id]);
 		}
-		bool isAllcrear = true;
-		for (auto& i : answer) isAllcrear &= i.jude_correct;//全問正解か調べる
+		const bool isAllcrear = std::all_of(ans.begin(), ans.end(), [](const auto& a) -> bool { return a.jude_correct; });//全問正解か調べる
 		show_last_message(isAllcrear, judge_correct, user_level);
 	}
 	catch (std::exception& er) {

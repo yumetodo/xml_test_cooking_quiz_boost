@@ -27,6 +27,9 @@
     <ClCompile Include="prelude.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="cpp_input_num.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="question_xml_read.h">
@@ -41,5 +44,13 @@
     <ClInclude Include="prelude.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="cpp_input_num.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="question.xml">
+      <Filter>リソース ファイル</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
