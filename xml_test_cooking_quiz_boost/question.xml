@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <questionbook>
   <questiondata>
     <questionid>1</questionid>
@@ -132,5 +132,26 @@
     <explanation>empty</explanation>
     <IsNotForBiginner>0</IsNotForBiginner>
     <choices_num>4</choices_num>
+  </questiondata>
+  <questiondata>
+    <questionid>20</questionid>
+    <question>生地はどれ？\n※画像あり\n1.パート・シュクレ\n2.パータフォンセ\n3.パート・サブレ\n4.パイ生地\n5.クロワッサン生地\n6.スポンジ生地</question>
+    <explanation>empty</explanation>
+    <IsNotForBiginner>1</IsNotForBiginner>
+    <choices_num>6</choices_num>
+  </questiondata>
+  <questiondata>
+    <questionid>21</questionid>
+    <question>クリームはどれ？\n※画像あり\n1.クレーム・パティシエール\n2.クレーム・ダマンド\n3.クレーム・フラジパーヌ</question>
+    <explanation>empty</explanation>
+    <IsNotForBiginner>1</IsNotForBiginner>
+    <choices_num>3</choices_num>
+  </questiondata>
+  <questiondata>
+    <questionid>22</questionid>
+    <question>いちごはどれ？\n※画像あり\n1.コシヒカリ\n2.フレーズデボア\n3.とちおとめ\n4.あまおう\n5.サマーアミーゴ\n6.もういっこ\n7.サマープリンセス\n8.さちのか\n9.初恋の香り</question>
+    <explanation>empty</explanation>
+    <IsNotForBiginner>1</IsNotForBiginner>
+    <choices_num>9</choices_num>
   </questiondata>
 </questionbook>

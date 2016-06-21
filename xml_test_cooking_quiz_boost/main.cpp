@@ -16,10 +16,10 @@ using ans_v = std::vector<answer>;
 
 auto decide_sequence_of_questions_number(uint8_t user_level) {
 	static const auto sequence_of_questions_number_table = make_array(
-		make_array<size_t>(0U, 1U, 2U, 3U, 4U, 8U, 12U, 16U, 17U, 18U),
-		make_array<size_t>(0U, 1U, 2U, 3U, 5U, 9U, 13U, 16U, 17U, 18U),
-		make_array<size_t>(0U, 1U, 2U, 3U, 6U, 10U, 14U, 16U, 17U, 18U),
-		make_array<size_t>(0U, 1U, 2U, 3U, 7U, 11U, 15U, 16U, 17U, 18U)
+		make_array<size_t>(0U, 1U, 2U, 3U, 4U, 8U, 12U, 16U, 17U, 18U, 19U, 20U, 21U),
+		make_array<size_t>(0U, 1U, 2U, 3U, 5U, 9U, 13U, 16U, 17U, 18U, 19U, 20U, 21U),
+		make_array<size_t>(0U, 1U, 2U, 3U, 6U, 10U, 14U, 16U, 17U, 18U, 19U, 20U, 21U),
+		make_array<size_t>(0U, 1U, 2U, 3U, 7U, 11U, 15U, 16U, 17U, 18U, 19U, 20U, 21U)
 		);
 	return sequence_of_questions_number_table[user_level - 1];
 }
@@ -74,7 +74,7 @@ int main(void) {
 		if (2 == choose_one_from_two(L"開始…１　終了…２")) return 0;
 		//xml read
 		const auto xml = read_question_xml(u8"question.xml");
-		const auto correct_answer = make_array(3, 2, 2, 1, 3, 3, 3, 3, 1, 1, 4, 2, 1, 6, 4, 2, 2, 3, 1);
+		const auto correct_answer = make_array(3, 2, 2, 1, 3, 3, 3, 3, 1, 1, 4, 2, 1, 6, 4, 2, 2, 3, 1, 1, 3, 2);
 		if(xml.size() != correct_answer.size()) return -1;//xmlの要素数と正解の数すべてが一致しない場合プログラム終了
 		const auto user_level = prelude_question();//事前質問
 		const auto sequence_of_questions_number = decide_sequence_of_questions_number(user_level);//問題順序の決定
